@@ -2,7 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Url } from "../models/url.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { getTokenRange, hashGenerator, range } from "../utils/zookeper.js";
+import { getTokenRange, hashGenerator, range, removeToken } from "../utils/zookeper.js";
 
 const addUrl = asyncHandler(async(req,res) =>{
     if(range.curr < range.end - 1){
@@ -13,6 +13,7 @@ const addUrl = asyncHandler(async(req,res) =>{
         range.curr++;
     }
     console.log("Range curr is -----",range.curr)
+    console.log("Long URL received from client",req.body);
     const longUrl = req.body.longUrl;
 
     if(!longUrl){
@@ -23,7 +24,7 @@ const addUrl = asyncHandler(async(req,res) =>{
     })
     if(urlAlreadyExists){
         res.status(200)
-        .json(new ApiResponse(200,urlAlreadyExists,"Short URL already existed."));
+        .json(new ApiResponse(200,urlAlreadyExists.updatedAt.shortURL,"Short URL already existed."));
 
     }
     // need to add middleware to create a B62 hash for
@@ -60,8 +61,12 @@ const getShortUrl = asyncHandler(async(req,res) =>{
     if(!urlEntry){
         throw new ApiError(404,"No corresponding long URL found");
     }
-
+    //console.log(urlEntry.redirectionURL)
     return res.redirect(urlEntry.redirectionURL);
 });
 
-export {addUrl, getShortUrl}
+const deleteToken = asyncHandler(async(req, res) =>{
+    removeToken();
+})
+
+export {addUrl, getShortUrl, deleteToken}
