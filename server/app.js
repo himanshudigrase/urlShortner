@@ -5,8 +5,8 @@ import router from "./routes/url.route.js";
 const app = express();
 
 app.use(cors({
-    origin:  process.env.CORS_ORGIN,
-    methods: 'GET,POST,PUT,DELETE',
+    origin: 'http://localhost:5173'|| process.env.CORS_ORGIN,
+    methods: ['GET,POST,PUT,DELETE'],
     allowedHeaders: ['Content-Type','accept']
 }));
 // app.use(cors());
